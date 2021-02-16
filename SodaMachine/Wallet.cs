@@ -10,14 +10,21 @@ namespace SodaMachine
     {
         //Member Variables (Has A)
         public List<Coin> Coins;
+        public Card card;
         //Constructor (Spawner)
         public Wallet()
         {
             Coins = new List<Coin>();
             FillRegister();
+            PutCardIntoWallet();
         }
         //Member Methods (Can Do)
         //Fills wallet with starting money
+
+        private void PutCardIntoWallet()
+        {
+            card = new Card(5.0);
+        }
         private void FillRegister()
         {
             // At least 5 dollars in change. Going with $5.55

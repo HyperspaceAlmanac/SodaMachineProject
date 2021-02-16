@@ -12,6 +12,9 @@ namespace SodaMachine
         private List<Coin> _register;
         private List<Can> _inventory;
 
+        // Soda Machine is tied to an online bank account to process Credit Card
+        private double bankAccount;
+
         // Private error margin for double comparison
         private double doubleErrorMargin;
 
@@ -32,7 +35,7 @@ namespace SodaMachine
             FillInventory();
             FillRegister();
 
-
+            bankAccount = 0.0;
             // Set error margin
             doubleErrorMargin = 0.01;
         }
