@@ -12,14 +12,6 @@ namespace SodaMachine
         private List<Coin> _register;
         private List<Can> _inventory;
 
-        // Tuple array of coin name and value
-        private static readonly Tuple<string, double>[] coinNames = new Tuple<string, double>[] {
-            new Tuple<string, double> ("Quarter", 0.25),
-            new Tuple<string, double> ("Dime", 0.1),
-            new Tuple<string, double> ("Nickel", 0.05),
-            new Tuple<string, double> ("Penny", 0.01),
-            };
-
         //Constructor (Spawner)
         public SodaMachine()
         {
@@ -34,11 +26,38 @@ namespace SodaMachine
         //A method to fill the sodamachines register with coin objects.
         public void FillRegister()
         {
-           
+            // 20 quarters
+            // 10 dimes
+            // 20 nickels
+            // 50 pennies
+            for (int i = 0; i < 10; i++)
+            {
+                _register.Add(new Quarter());
+                _register.Add(new Quarter());
+
+                _register.Add(new Dime());
+
+                _register.Add(new Nickel());
+                _register.Add(new Nickel());
+
+                _register.Add(new Penny());
+                _register.Add(new Penny());
+                _register.Add(new Penny());
+                _register.Add(new Penny());
+                _register.Add(new Penny());
+            }
+
         }
         //A method to fill the sodamachines inventory with soda can objects.
         public void FillInventory()
         {
+            // Just do 10 of each
+            for (int i = 0; i < 10; i++)
+            {
+                _inventory.Add(new RootBeer());
+                _inventory.Add(new Cola());
+                _inventory.Add(new OrangeSoda());
+            }
             
         }
         //Method to be called to start a transaction.
@@ -63,7 +82,18 @@ namespace SodaMachine
         //Gets a soda from the inventory based on the name of the soda.
         private Can GetSodaFromInventory(string nameOfSoda)
         {
-          
+            Can canObj;
+            // If it does not exist, return null
+            for (int i = 0; i < _inventory.Count; i++)
+            {
+                if (_inventory[i].Name == nameOfSoda)
+                {
+                    canObj = _inventory[i];
+                    _inventory.RemoveAt(i);
+                    return canObj;
+                }
+            }
+            return null;
         }
 
         //This is the main method for calculating the result of the transaction.
@@ -91,7 +121,7 @@ namespace SodaMachine
             {
                 foundChange = false;
                 // quarter
-                foreach (Tuple<string, double> tuple in coinNames) {
+                foreach (Tuple<string, double> tuple in Coin.coinNames) {
                     if (changeValue >= tuple.Item2)
                     {
                         if (RegisterHasCoin(tuple.Item1)) {
