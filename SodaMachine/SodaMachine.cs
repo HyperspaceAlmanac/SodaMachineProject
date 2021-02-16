@@ -77,7 +77,15 @@ namespace SodaMachine
         //pass payment to the calculate transaction method to finish up the transaction based on the results.
         private void Transaction(Customer customer)
         {
-           
+            // List the potentially relevant methods from UserInterface
+            // Maybe not actaully used, but called by something else
+            // public static void PrintOptions(List<Can> SodaOptions)
+
+            // Loops until user enters available soda
+            // public static string SodaSelection(List<Can> SodaOptions)
+            Can product = GetSodaFromInventory(UserInterface.SodaSelection(_inventory));
+            List<Coin> payment = customer.GatherCoinsFromWallet(product);
+            CalculateTransaction(payment, product, customer);
         }
         //Gets a soda from the inventory based on the name of the soda.
         private Can GetSodaFromInventory(string nameOfSoda)
@@ -93,6 +101,7 @@ namespace SodaMachine
                     return canObj;
                 }
             }
+            // Helper method from UserInterface already checks, but will have something here too
             return null;
         }
 
@@ -105,7 +114,39 @@ namespace SodaMachine
         //If the payment does not meet the cost of the soda: despense payment back to the customer.
         private void CalculateTransaction(List<Coin> payment, Can chosenSoda, Customer customer)
         {
-           
+            double totalAmount = TotalCoinValue(payment);
+            // Need to give back extra
+            if (totalAmount > chosenSoda.Price)
+            {
+                // Check to see if machine has enough change
+                double change = DetermineChange(TotalCoinValue(payment), chosenSoda.Price);
+                List<Coin> changeInCoins = GatherChange(change);
+                if (changeInCoins is null)
+                {
+                    // Return money and put soda back
+                    customer.AddCoinsIntoWallet(payment);
+                    _inventory.Add(chosenSoda);
+                }
+                else
+                {
+                    customer.AddCanToBackpack(chosenSoda);
+                    DepositCoinsIntoRegister(payment);
+                    customer.AddCoinsIntoWallet(changeInCoins);
+                }
+            }
+            // Not enough
+            else if (totalAmount < chosenSoda.Price)
+            {
+                // Give back the money, and put soda back into inventory
+                customer.AddCoinsIntoWallet(payment);
+                _inventory.Add(chosenSoda);
+            }
+            // Exact amount
+            else
+            {
+                customer.AddCanToBackpack(chosenSoda);
+                DepositCoinsIntoRegister(payment);
+            }
         }
         //Takes in the value of the amount of change needed.
         //Attempts to gather all the required coins from the sodamachine's register to make change.
@@ -113,7 +154,7 @@ namespace SodaMachine
         //If the change cannot be made, return null.
         private List<Coin> GatherChange(double changeValue)
         {
-            List<Coin> result = new List<Coin>;
+            List<Coin> result = new List<Coin>();
 
             // Not as complicated as I thought. Can just check for 
             bool foundChange = true;
@@ -136,10 +177,7 @@ namespace SodaMachine
             if (foundChange && changeValue == 0) {
                 return result;
             } else {
-                foreach (Coin c in result)
-                {
-                    DepositCoinsIntoRegister(c);
-                }
+                DepositCoinsIntoRegister(result);
                 return null;
             }
         }
