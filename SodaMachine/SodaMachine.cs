@@ -96,15 +96,19 @@ namespace SodaMachine
         //pass payment to the calculate transaction method to finish up the transaction based on the results.
         private void Transaction(Customer customer)
         {
-            // List the potentially relevant methods from UserInterface
-            // Maybe not actaully used, but called by something else
-            // public static void PrintOptions(List<Can> SodaOptions)
-
-            // Loops until user enters available soda
-            // public static string SodaSelection(List<Can> SodaOptions)
+            bool useCard = UserInterface.AskCustomerForCard();
             Can product = GetSodaFromInventory(UserInterface.SodaSelection(_inventory));
-            List<Coin> payment = customer.GatherCoinsFromWallet(product);
-            CalculateTransaction(payment, product, customer);
+            if (useCard)
+            {
+                Card card = customer.UseCreditCard(product);
+                CalculateTransaction(card, product, customer);
+            }
+            else
+            {
+                List<Coin> payment = customer.GatherCoinsFromWallet(product);
+                CalculateTransaction(payment, product, customer);
+            }
+            
         }
         //Gets a soda from the inventory based on the name of the soda.
         private Can GetSodaFromInventory(string nameOfSoda)
@@ -122,6 +126,26 @@ namespace SodaMachine
             }
             // Helper method from UserInterface already checks, but will have something here too
             return null;
+        }
+        // OVERLOAD
+        private void CalculateTransaction(Card card, Can chosenSoda, Customer customer)
+        {
+            // After first transaction with card, the value can be off
+            if (card == null)
+            {
+                UserInterface.OutputText("No card has been provided");
+                _inventory.Add(chosenSoda);
+            }
+            if (card.ChargeCard(chosenSoda.Price))
+            {
+                bankAccount += chosenSoda.Price;
+                customer.AddCanToBackpack(chosenSoda);
+            }
+            else
+            {
+                UserInterface.OutputText("Insufficient funds");
+                _inventory.Add(chosenSoda);
+            }
         }
 
         //This is the main method for calculating the result of the transaction.
@@ -142,7 +166,7 @@ namespace SodaMachine
                 List<Coin> changeInCoins = GatherChange(change);
                 if (changeInCoins is null)
                 {
-                    Console.WriteLine("Unable to make change, returning " + TotalCoinValue(payment));
+                    UserInterface.OutputText("Unable to make change, returning " + TotalCoinValue(payment));
                     // Return money and put soda back
                     customer.AddCoinsIntoWallet(payment);
                     _inventory.Add(chosenSoda);
@@ -159,7 +183,7 @@ namespace SodaMachine
             else if (totalAmount < chosenSoda.Price)
             {
                 // Give back the money, and put soda back into inventory
-                Console.WriteLine("Not enough for soda, returning money");
+                UserInterface.OutputText("Not enough for soda, returning money");
                 customer.AddCoinsIntoWallet(payment);
                 _inventory.Add(chosenSoda);
             }

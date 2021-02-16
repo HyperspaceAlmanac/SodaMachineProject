@@ -195,5 +195,25 @@ namespace SodaMachine
             }
             Console.ReadLine();
         }
+
+        public static bool AskCustomerForCard()
+        {
+            bool result = ContinuePrompt("Would you like to use a Credit Card? (y/n)");
+            if (result) {
+                Console.Clear();
+            }
+            return result;
+        }
+
+        public static bool InsertCard(Can selectedSoda)
+        {
+            DisplayCost(selectedSoda);
+            bool result = ContinuePrompt("Insert Credit Card? (y/n)");
+            if (result)
+            {
+                Console.Clear();
+            }
+            return result;
+        }
     }
 }

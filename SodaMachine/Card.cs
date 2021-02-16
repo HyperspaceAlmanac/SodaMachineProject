@@ -21,8 +21,7 @@ namespace SodaMachine
             availableFunds = funds;
         }
         public bool ChargeCard(double amount) {
-            // Need to check for double error margin if double subtraction happened at some point
-            // Though this is most likely compared against price of a single can
+            // Since available funds uses double subtraction, need to check for error margin after first transaction
             if (availableFunds >= amount - 0.001)
             {
                 availableFunds -= amount;
@@ -35,7 +34,7 @@ namespace SodaMachine
             }
             else
             {
-                UserInterface.OutputText("The card has been declind");
+                UserInterface.OutputText("The card has been declined");
                 return false;
             }
         }

@@ -41,13 +41,25 @@ namespace SodaMachine
                     }
                     else
                     {
-                        Console.WriteLine("There are no more " + coinName + "s left in wallet");
+                        UserInterface.OutputText("There are no more " + coinName + "s left in wallet");
                     }
                 }
             }
             while (coinName != "Done");
             
             return payment;
+        }
+
+        public Card UseCreditCard(Can selectedCan)
+        {
+            if (UserInterface.InsertCard(selectedCan))
+            {
+                return Wallet.card;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         //Returns a coin object from the wallet based on the name passed into it.
