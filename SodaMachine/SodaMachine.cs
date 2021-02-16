@@ -12,6 +12,9 @@ namespace SodaMachine
         private List<Coin> _register;
         private List<Can> _inventory;
 
+        // Private error margin for double comparison
+        private double doubleErrorMargin;
+
         // Tuple array of coin name and value
         public static readonly Tuple<string, double>[] COINOPTIONS = new Tuple<string, double>[] {
             new Tuple<string, double> ("Quarter", 0.25),
@@ -28,6 +31,10 @@ namespace SodaMachine
             _inventory = new List<Can>();
             FillInventory();
             FillRegister();
+
+
+            // Set error margin
+            doubleErrorMargin = 0.01;
         }
 
         //Member Methods (Can Do)
@@ -149,6 +156,7 @@ namespace SodaMachine
             else if (totalAmount < chosenSoda.Price)
             {
                 // Give back the money, and put soda back into inventory
+                Console.WriteLine("Not enough for soda, returning money");
                 customer.AddCoinsIntoWallet(payment);
                 _inventory.Add(chosenSoda);
             }
@@ -170,28 +178,33 @@ namespace SodaMachine
 
             // Not as complicated as I thought. Can just check for 
             bool foundChange = true;
+
+            Coin[] coinTypes = new Coin[] { new Quarter(), new Dime(), new Nickel(), new Penny() };
             while (changeValue > 0 && foundChange)
             {
                 foundChange = false;
                 // quarter
-                foreach (Tuple<string, double> tuple in COINOPTIONS) {
-                    if (changeValue >= tuple.Item2)
+                foreach (Coin coinType in coinTypes)
+                {
+                    // Need to handle case of change being slightly less
+                    // 0.6 - 0.5 is not equal to 0.1
+                    if (coinType.Value <= changeValue + doubleErrorMargin && RegisterHasCoin(coinType.Name))
                     {
-                        if (RegisterHasCoin(tuple.Item1)) {
-                            result.Add(GetCoinFromRegister(tuple.Item1));
-                            changeValue -= tuple.Item2;
-                            foundChange = true;
-                            break;
-                        }
+                        result.Add(GetCoinFromRegister(coinType.Name));
+                        changeValue -= coinType.Value;
+                        foundChange = true;
+                        break;
                     }
                 }
-                // Break out of outer loop
-                if (Math.Abs(changeValue) < 0.001)
+                // If value is not 0, but less than error margin, return
+                // Abs as safety feature, since the numbers can go slightly negative due to errorMargin added
+                // to change amount left due to how double subtraction can make number slight larger or smaller
+                if (Math.Abs(changeValue) < doubleErrorMargin)
                 {
                     break;
                 }
             }
-            if (foundChange && Math.Abs(changeValue) < 0.001) {
+            if (foundChange && Math.Abs(changeValue) < doubleErrorMargin) {
                 return result;
             } else {
                 DepositCoinsIntoRegister(result);
@@ -251,5 +264,6 @@ namespace SodaMachine
                 _register.Add(c);
             }
         }
+
     }
 }
