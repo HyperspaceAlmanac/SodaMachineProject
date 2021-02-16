@@ -12,6 +12,14 @@ namespace SodaMachine
         private List<Coin> _register;
         private List<Can> _inventory;
 
+        // Tuple array of coin name and value
+        private static readonly Tuple<string, double>[] coinNames = new Tuple<string, double>[] {
+            new Tuple<string, double> ("Quarter", 0.25),
+            new Tuple<string, double> ("Dime", 0.1),
+            new Tuple<string, double> ("Nickel", 0.05),
+            new Tuple<string, double> ("Penny", 0.01),
+            };
+
         //Constructor (Spawner)
         public SodaMachine()
         {
@@ -75,8 +83,37 @@ namespace SodaMachine
         //If the change cannot be made, return null.
         private List<Coin> GatherChange(double changeValue)
         {
-            
+            List<Coin> result = new List<Coin>;
+
+            // Not as complicated as I thought. Can just check for 
+            bool foundChange = true;
+            while (changeValue > 0 && foundChange)
+            {
+                foundChange = false;
+                // quarter
+                foreach (Tuple<string, double> tuple in coinNames) {
+                    if (changeValue >= tuple.Item2)
+                    {
+                        if (RegisterHasCoin(tuple.Item1)) {
+                            result.Add(GetCoinFromRegister(tuple.Item1));
+                            changeValue -= tuple.Item2;
+                            foundChange = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (foundChange && changeValue == 0) {
+                return result;
+            } else {
+                foreach (Coin c in result)
+                {
+                    DepositCoinsIntoRegister(c);
+                }
+                return null;
+            }
         }
+
         //Reusable method to check if the register has a coin of that name.
         //If it does have one, return true.  Else, false.
         private bool RegisterHasCoin(string name)
