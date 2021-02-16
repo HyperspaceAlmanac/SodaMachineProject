@@ -26,8 +26,28 @@ namespace SodaMachine
         //When all is said and done this method will return a list of coin objects that the customer will use a payment for their soda.
         public List<Coin> GatherCoinsFromWallet(Can selectedCan)
         {
-            string coin;
-            coin = UserInterface.CoinSelection(selectedCan, Wallet.Coins);
+            List<Coin> payment = new List<Coin>();
+            string coinName;
+            Coin coin;
+            do
+            {
+                coinName = UserInterface.CoinSelection(selectedCan, payment);
+                if (coinName != "Done")
+                {
+                    coin = GetCoinFromWallet(coinName);
+                    if (coin != null)
+                    {
+                        payment.Add(coin);
+                    }
+                    else
+                    {
+                        Console.WriteLine("There are no more " + coinName + "s left in wallet");
+                    }
+                }
+            }
+            while (coinName != "Done");
+            
+            return payment;
         }
         //Returns a coin object from the wallet based on the name passed into it.
         //Returns null if no coin can be found

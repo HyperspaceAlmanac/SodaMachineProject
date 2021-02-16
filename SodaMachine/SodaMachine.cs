@@ -12,6 +12,15 @@ namespace SodaMachine
         private List<Coin> _register;
         private List<Can> _inventory;
 
+        // Tuple array of coin name and value
+        public static readonly Tuple<string, double>[] COINOPTIONS = new Tuple<string, double>[] {
+            new Tuple<string, double> ("Quarter", 0.25),
+            new Tuple<string, double> ("Dime", 0.1),
+            new Tuple<string, double> ("Nickel", 0.05),
+            new Tuple<string, double> ("Penny", 0.01),
+        };
+
+
         //Constructor (Spawner)
         public SodaMachine()
         {
@@ -123,12 +132,14 @@ namespace SodaMachine
                 List<Coin> changeInCoins = GatherChange(change);
                 if (changeInCoins is null)
                 {
+                    Console.WriteLine("Unable to make change, returning " + TotalCoinValue(payment));
                     // Return money and put soda back
                     customer.AddCoinsIntoWallet(payment);
                     _inventory.Add(chosenSoda);
                 }
                 else
                 {
+                    UserInterface.EndMessage(chosenSoda.Name, TotalCoinValue(changeInCoins));
                     customer.AddCanToBackpack(chosenSoda);
                     DepositCoinsIntoRegister(payment);
                     customer.AddCoinsIntoWallet(changeInCoins);
@@ -144,6 +155,7 @@ namespace SodaMachine
             // Exact amount
             else
             {
+                UserInterface.EndMessage(chosenSoda.Name, 0);
                 customer.AddCanToBackpack(chosenSoda);
                 DepositCoinsIntoRegister(payment);
             }
@@ -162,7 +174,7 @@ namespace SodaMachine
             {
                 foundChange = false;
                 // quarter
-                foreach (Tuple<string, double> tuple in Coin.coinNames) {
+                foreach (Tuple<string, double> tuple in COINOPTIONS) {
                     if (changeValue >= tuple.Item2)
                     {
                         if (RegisterHasCoin(tuple.Item1)) {
@@ -173,8 +185,13 @@ namespace SodaMachine
                         }
                     }
                 }
+                // Break out of outer loop
+                if (Math.Abs(changeValue) < 0.001)
+                {
+                    break;
+                }
             }
-            if (foundChange && changeValue == 0) {
+            if (foundChange && Math.Abs(changeValue) < 0.001) {
                 return result;
             } else {
                 DepositCoinsIntoRegister(result);
@@ -214,7 +231,7 @@ namespace SodaMachine
         //Takes in the total payment amount and the price of can to return the change amount.
         private double DetermineChange(double totalPayment, double canPrice)
         {
-            return canPrice - totalPayment;
+            return totalPayment - canPrice;
         }
         //Takes in a list of coins to returnt he total value of the coins as a double.
         private double TotalCoinValue(List<Coin> payment)
