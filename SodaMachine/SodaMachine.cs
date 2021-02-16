@@ -81,28 +81,53 @@ namespace SodaMachine
         //If it does have one, return true.  Else, false.
         private bool RegisterHasCoin(string name)
         {
-           
+            foreach (Coin c in _register)
+            {
+                if (c.Name == name)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         //Reusable method to return a coin from the register.
         //Returns null if no coin can be found of that name.
         private Coin GetCoinFromRegister(string name)
         {
-            
+            Coin result = null;
+            for (int i = 0; i < _register.Count; i++)
+            {
+                if (_register[i].Name == name)
+                {
+                    result = _register[i];
+                    _register.RemoveAt(i);
+                    break;
+                }
+            }
+            return result;
         }
         //Takes in the total payment amount and the price of can to return the change amount.
         private double DetermineChange(double totalPayment, double canPrice)
         {
-            
+            return canPrice - totalPayment;
         }
         //Takes in a list of coins to returnt he total value of the coins as a double.
         private double TotalCoinValue(List<Coin> payment)
         {
-           
+            double result = 0.0;
+            foreach (Coin c in payment)
+            {
+                result += c.Value;
+            }
+            return result;
         }
         //Puts a list of coins into the soda machines register.
         private void DepositCoinsIntoRegister(List<Coin> coins)
         {
-           
+            foreach (Coin c in coins)
+            {
+                _register.Add(c);
+            }
         }
     }
 }
