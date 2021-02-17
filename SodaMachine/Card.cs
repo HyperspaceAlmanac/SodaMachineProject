@@ -29,7 +29,7 @@ namespace SodaMachine
                 {
                     availableFunds = 0.0;
                 }
-                UserInterface.OutputText($"Card transaction successful. Remaining fund: ${availableFunds}.2f");
+                UserInterface.OutputText($"Card transaction successful. Card Remaining fund: ${availableFunds:F2}");
                 return true;
             }
             else

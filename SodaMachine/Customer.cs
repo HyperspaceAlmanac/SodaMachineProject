@@ -85,12 +85,25 @@ namespace SodaMachine
             {
                 Wallet.Coins.Add(c);
             }
+            UserInterface.OutputText($"Wallet now has ${TotalCoinValue(Wallet.Coins):F2} in coins");
+        }
+
+        // Copied this over from SodaMachine. Maybe could make this public static
+        private double TotalCoinValue(List<Coin> payment)
+        {
+            double result = 0.0;
+            foreach (Coin c in payment)
+            {
+                result += c.Value;
+            }
+            return result;
         }
         //Takes in a can object to add to the customers backpack.
         public void AddCanToBackpack(Can purchasedCan)
         {
             Backpack.cans.Add(purchasedCan);
-            
+            // Display content
+            Backpack.DisplayContent();
         }
     }
 }

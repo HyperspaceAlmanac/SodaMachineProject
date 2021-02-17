@@ -133,13 +133,16 @@ namespace SodaMachine
             // After first transaction with card, the value can be off
             if (card == null)
             {
-                UserInterface.OutputText("No card has been provided");
+                UserInterface.OutputText("Credit Card transaction has been cancelled");
                 _inventory.Add(chosenSoda);
             }
-            if (card.ChargeCard(chosenSoda.Price))
+            else if (card.ChargeCard(chosenSoda.Price))
             {
                 bankAccount += chosenSoda.Price;
+                UserInterface.EndMessage(chosenSoda.Name, 0);
                 customer.AddCanToBackpack(chosenSoda);
+                UserInterface.OutputText($"The Soda Machine has made a total of {bankAccount:F2} from credit card sales");
+                DisplayInventory();
             }
             else
             {
@@ -166,7 +169,7 @@ namespace SodaMachine
                 List<Coin> changeInCoins = GatherChange(change);
                 if (changeInCoins is null)
                 {
-                    UserInterface.OutputText("Unable to make change, returning " + TotalCoinValue(payment));
+                    UserInterface.OutputText($"The soda machine does not have enough change, returning ${TotalCoinValue(payment):F2}");
                     // Return money and put soda back
                     customer.AddCoinsIntoWallet(payment);
                     _inventory.Add(chosenSoda);
@@ -176,6 +179,7 @@ namespace SodaMachine
                     UserInterface.EndMessage(chosenSoda.Name, TotalCoinValue(changeInCoins));
                     customer.AddCanToBackpack(chosenSoda);
                     DepositCoinsIntoRegister(payment);
+                    DisplayInventory();
                     customer.AddCoinsIntoWallet(changeInCoins);
                 }
             }
@@ -193,6 +197,7 @@ namespace SodaMachine
                 UserInterface.EndMessage(chosenSoda.Name, 0);
                 customer.AddCanToBackpack(chosenSoda);
                 DepositCoinsIntoRegister(payment);
+                DisplayInventory();
             }
         }
         //Takes in the value of the amount of change needed.
@@ -290,6 +295,13 @@ namespace SodaMachine
             {
                 _register.Add(c);
             }
+            UserInterface.OutputText($"The Soda Machine now has {TotalCoinValue(_register):F2} in change");
+        }
+
+        private void DisplayInventory()
+        {
+            UserInterface.OutputText("Soda Machine has:");
+            UserInterface.DisplayCans(_inventory);
         }
 
     }

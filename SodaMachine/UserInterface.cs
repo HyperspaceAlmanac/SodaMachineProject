@@ -11,7 +11,7 @@ namespace SodaMachine
         //Intro message that asks user if they wish to make a purchase
         public static bool DisplayWelcomeInstructions(List<Can> sodaOptions)
         {
-            OutputText("\nWelcome to the soda machine.  We only take coins as payment \n");
+            OutputText("\nWelcome to the soda machine.  We now take both coins and credit card as payment \n");
             OutputText("At a glance, these are the drink options:\n");
             PrintOptions(sodaOptions);
             bool willProceed = ContinuePrompt("\nWould you like to make a purchase? (y/n)");
@@ -106,13 +106,13 @@ namespace SodaMachine
         //Takes in a list of sodas to print.
         public static void PrintOptions(List<Can> SodaOptions)
         {
-
            List<Can> uniqueCans = GetUniqueCans(SodaOptions);
            foreach(Can can in uniqueCans)
            {
                 Console.WriteLine($"\t{can.Name}");
            }
         }
+
         //Takes in the inventory of sodas to provide the user with an interface for their selection.
         public static string SodaSelection(List<Can> SodaOptions)
         {
@@ -214,6 +214,27 @@ namespace SodaMachine
                 Console.Clear();
             }
             return result;
+        }
+
+        public static void DisplayCans(List<Can> sodas)
+        {
+            Dictionary<string, int> inventory = new Dictionary<string, int>();
+            foreach (Can can in sodas)
+            {
+                if (inventory.ContainsKey(can.Name))
+                {
+                    inventory[can.Name] += 1;
+                }
+                else
+                {
+                    inventory[can.Name] = 1;
+                }
+            }
+            foreach (string key in inventory.Keys)
+            {
+                OutputText($"{inventory[key]} can{(inventory[key] > 1 ? "s" : "")} of {key}");
+            }
+            OutputText("");
         }
     }
 }
