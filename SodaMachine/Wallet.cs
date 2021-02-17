@@ -9,23 +9,32 @@ namespace SodaMachine
     class Wallet
     {
         //Member Variables (Has A)
+        // Leaving Coins as public since Customer needs to directly interact with it 
         public List<Coin> Coins;
-        public Card card;
+        private Card card;
         //Constructor (Spawner)
+
         public Wallet()
         {
             Coins = new List<Coin>();
-            FillRegister();
+            FillWallet();
             PutCardIntoWallet();
+        }
+
+        // Card only has getter. Can get Card object and can call its methods, but cannot assign Wallet's card to a new Card. 
+        public Card Card
+        {
+            get { return card; }
         }
         //Member Methods (Can Do)
         //Fills wallet with starting money
 
         private void PutCardIntoWallet()
         {
-            card = new Card(5.0);
+            //DEBUG change back to $2.0 after debugging
+            card = new Card(2.00);
         }
-        private void FillRegister()
+        private void FillWallet()
         {
             // At least 5 dollars in change. Going with $5.55
             // 12 quarters = 3 dollars, 20 dimes = 2 dollars, 10 nickels = 50 cents, 5 pennies = 5 cents
@@ -45,6 +54,15 @@ namespace SodaMachine
             {
                 Coins.Add(new Penny());
             }
+        }
+
+        // Customer can call this to check what is in the wallet
+        public void CoinsInWallet()
+        {
+            UserInterface.SeparatorLine();
+            UserInterface.OutputText($"You have ${Coin.TotalCoinValue(Coins):F2} in coins");
+            UserInterface.DisplayObjects(Coins);
+            UserInterface.SeparatorLine();
         }
     }
 }

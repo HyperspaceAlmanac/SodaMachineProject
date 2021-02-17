@@ -62,7 +62,7 @@ namespace SodaMachine
         public void FillInventory()
         {
             // Just do 10 of each
-            //DEBUG SET TO 2, change back to 10 later
+            //DEBUG change back to 5 after debugging
             for (int i = 0; i < 5; i++)
             {
                 _inventory.Add(new RootBeer());
@@ -155,7 +155,7 @@ namespace SodaMachine
         //If the payment does not meet the cost of the soda: despense payment back to the customer.
         private void CalculateTransaction(List<Coin> payment, Can chosenSoda, Customer customer)
         {
-            double totalAmount = TotalCoinValue(payment);
+            double totalAmount = Coin.TotalCoinValue(payment);
             // Need to give back extra
             // Because of Double inaccuraies, it would be easiest to check for equals first
 
@@ -169,18 +169,18 @@ namespace SodaMachine
             else if (totalAmount + doubleErrorMargin > chosenSoda.Price)
             {
                 // Check to see if machine has enough change
-                double change = DetermineChange(TotalCoinValue(payment), chosenSoda.Price);
+                double change = DetermineChange(Coin.TotalCoinValue(payment), chosenSoda.Price);
                 List<Coin> changeInCoins = GatherChange(change);
                 if (changeInCoins is null)
                 {
-                    UserInterface.OutputText($"The soda machine does not have enough change, returning ${TotalCoinValue(payment):F2}");
+                    UserInterface.OutputText($"The soda machine does not have enough change, returning ${Coin.TotalCoinValue(payment):F2}");
                     // Return money and put soda back
                     customer.AddCoinsIntoWallet(payment);
                     _inventory.Add(chosenSoda);
                 }
                 else
                 {
-                    UserInterface.EndMessage(chosenSoda.Name, TotalCoinValue(changeInCoins));
+                    UserInterface.EndMessage(chosenSoda.Name, Coin.TotalCoinValue(changeInCoins));
                     customer.AddCanToBackpack(chosenSoda);
                     DepositCoinsIntoRegister(payment);
                     customer.AddCoinsIntoWallet(changeInCoins);
@@ -274,15 +274,8 @@ namespace SodaMachine
             return totalPayment - canPrice;
         }
         //Takes in a list of coins to returnt he total value of the coins as a double.
-        private double TotalCoinValue(List<Coin> payment)
-        {
-            double result = 0.0;
-            foreach (Coin c in payment)
-            {
-                result += c.Value;
-            }
-            return result;
-        }
+        // TotalCoinValue moved to Coin class as public static method
+
         //Puts a list of coins into the soda machines register.
         private void DepositCoinsIntoRegister(List<Coin> coins)
         {
@@ -297,7 +290,7 @@ namespace SodaMachine
             UserInterface.OutputText($"The Soda Machine has made a total of ${bankAccount:F2} from credit card sales");
             UserInterface.OutputText("The Soda Machine has these in stock:");
             UserInterface.DisplayObjects(_inventory);
-            UserInterface.OutputText($"The Soda Machine has ${TotalCoinValue(_register):F2} in change");
+            UserInterface.OutputText($"The Soda Machine has ${Coin.TotalCoinValue(_register):F2} in change");
             UserInterface.DisplayObjects(_register);
             UserInterface.SeparatorLine();
         }

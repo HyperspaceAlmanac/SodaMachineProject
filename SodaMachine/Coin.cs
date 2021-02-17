@@ -24,5 +24,14 @@ namespace SodaMachine
         //Constructor (Spawner)
 
         //Member Methods (Can Do)
+        public static double TotalCoinValue(List<Coin> coins)
+        {
+            double result = 0.0;
+            foreach (Coin c in coins)
+            {
+                result += c.Value;
+            }
+            return result;
+        }
     }
 }

@@ -9,14 +9,16 @@ namespace SodaMachine
     class Customer
     {
         //Member Variables (Has A)
-        public Wallet Wallet;
-        public Backpack Backpack;
+        // Changing to private to give more protection.
+        // Code has been structured so that the wallet and backpack are never directly accessed outside of Customer
+        private Wallet wallet;
+        private Backpack backpack;
 
         //Constructor (Spawner)
         public Customer()
         {
-            Wallet = new Wallet();
-            Backpack = new Backpack();
+            wallet = new Wallet();
+            backpack = new Backpack();
         }
         //Member Methods (Can Do)
 
@@ -27,25 +29,33 @@ namespace SodaMachine
         public List<Coin> GatherCoinsFromWallet(Can selectedCan)
         {
             List<Coin> payment = new List<Coin>();
-            string coinName;
+            string userInput;
             Coin coin;
+
+            // Display contents of wallet once
+            wallet.CoinsInWallet();
             do
             {
-                coinName = UserInterface.CoinSelection(selectedCan, payment);
-                if (coinName != "Done")
+                userInput = UserInterface.CoinSelection(selectedCan, payment);
+                if (userInput == "Reset")
                 {
-                    coin = GetCoinFromWallet(coinName);
+                    AddCoinsIntoWallet(payment, false);
+                    payment = new List<Coin>();
+                }
+                else if (userInput != "Done")
+                {
+                    coin = GetCoinFromWallet(userInput);
                     if (coin != null)
                     {
                         payment.Add(coin);
                     }
                     else
                     {
-                        UserInterface.WaitToContinue("There are no more " + coinName + "s left in the wallet!");
+                        UserInterface.WaitToContinue("There are no more " + userInput + "s left in the wallet!");
                     }
                 }
             }
-            while (coinName != "Done");
+            while (userInput != "Done");
             
             return payment;
         }
@@ -54,7 +64,7 @@ namespace SodaMachine
         {
             if (UserInterface.InsertCard(selectedCan))
             {
-                return Wallet.card;
+                return wallet.Card;
             }
             else
             {
@@ -67,46 +77,36 @@ namespace SodaMachine
         public Coin GetCoinFromWallet(string coinName)
         {
             Coin result = null;
-            for (int i = 0; i < Wallet.Coins.Count; i++)
+            for (int i = 0; i < wallet.Coins.Count; i++)
             {
-                if (Wallet.Coins[i].Name == coinName)
+                if (wallet.Coins[i].Name == coinName)
                 {
-                    result = Wallet.Coins[i];
-                    Wallet.Coins.RemoveAt(i);
+                    result = wallet.Coins[i];
+                    wallet.Coins.RemoveAt(i);
                     break;
                 }
             }
             return result;
         }
         //Takes in a list of coin objects to add into the customers wallet.
-        public void AddCoinsIntoWallet(List<Coin> coinsToAdd)
+        public void AddCoinsIntoWallet(List<Coin> coinsToAdd, bool display = true)
         {
             foreach (Coin c in coinsToAdd)
             {
-                Wallet.Coins.Add(c);
+                wallet.Coins.Add(c);
             }
-            UserInterface.SeparatorLine();
-            UserInterface.OutputText($"You now have ${TotalCoinValue(Wallet.Coins):F2} in coins");
-            UserInterface.DisplayObjects(Wallet.Coins);
-            UserInterface.SeparatorLine();
+            if (display)
+            {
+                wallet.CoinsInWallet();
+            }
         }
 
-        // Copied this over from SodaMachine. Maybe could make this public static
-        private double TotalCoinValue(List<Coin> payment)
-        {
-            double result = 0.0;
-            foreach (Coin c in payment)
-            {
-                result += c.Value;
-            }
-            return result;
-        }
         //Takes in a can object to add to the customers backpack.
         public void AddCanToBackpack(Can purchasedCan)
         {
-            Backpack.cans.Add(purchasedCan);
+            backpack.cans.Add(purchasedCan);
             // Display content
-            Backpack.DisplayContent();
+            backpack.DisplayContent();
         }
     }
 }

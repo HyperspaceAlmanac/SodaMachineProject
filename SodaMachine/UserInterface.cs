@@ -49,7 +49,8 @@ namespace SodaMachine
                 Console.WriteLine("Enter -2- for Dime");
                 Console.WriteLine("Enter -3- for Nickel");
                 Console.WriteLine("Enter -4- for Penny");
-                Console.WriteLine("Enter -5- when finishd to deposit payment");
+                Console.WriteLine("Enter -5- when finished to deposit payment");
+                Console.WriteLine("Enter -6- to reset");
                 int.TryParse(Console.ReadLine(), out int selection);
                 validatedSelection = ValidateCoinChoice(selection);
                
@@ -79,6 +80,9 @@ namespace SodaMachine
                 case 5:
                     Console.Clear();
                     return Tuple.Create(true, "Done");
+                case 6:
+                    Console.Clear();
+                    return Tuple.Create(true, "Reset");
                 default:
                     DisplayError("Not a valid selection\n\nPress enter to continue");
                     return Tuple.Create(false, "Null");
@@ -200,9 +204,7 @@ namespace SodaMachine
         public static bool AskCustomerForCard()
         {
             bool result = ContinuePrompt("Would you like to use a Credit Card? (y/n)");
-            if (result) {
-                Console.Clear();
-            }
+            Console.Clear();
             return result;
         }
 
@@ -210,10 +212,7 @@ namespace SodaMachine
         {
             DisplayCost(selectedSoda);
             bool result = ContinuePrompt("Insert Credit Card? (y/n)");
-            if (result)
-            {
-                Console.Clear();
-            }
+            Console.Clear();
             return result;
         }
 
