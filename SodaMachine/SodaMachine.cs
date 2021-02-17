@@ -36,6 +36,11 @@ namespace SodaMachine
         //A method to fill the sodamachines register with coin objects.
         public void FillRegister()
         {
+            StandardInitialChange();
+        }
+
+        private void StandardInitialChange()
+        {
             // 20 quarters
             // 10 dimes
             // 20 nickels
@@ -56,12 +61,11 @@ namespace SodaMachine
                 _register.Add(new Penny());
                 _register.Add(new Penny());
             }
-
         }
         //A method to fill the sodamachines inventory with soda can objects.
         public void FillInventory()
         {
-            // Just do 10 of each
+            // Just do 5 of each
             //DEBUG change back to 5 after debugging
             for (int i = 0; i < 5; i++)
             {
@@ -297,6 +301,17 @@ namespace SodaMachine
         private bool ProductsLeft()
         {
             return _inventory.Count > 0;
+        }
+        private void CustomInitialChange()
+        {
+            _register.Add(new Nickel());
+            _register.Add(new Nickel());
+
+            _register.Add(new Penny());
+            _register.Add(new Penny());
+            _register.Add(new Penny());
+            _register.Add(new Penny());
+            _register.Add(new Penny());
         }
     }
 }

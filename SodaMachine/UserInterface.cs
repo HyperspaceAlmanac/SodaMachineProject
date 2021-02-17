@@ -108,6 +108,7 @@ namespace SodaMachine
             return UniqueCans;
 
         }
+
         //Takes in a list of sodas to print.
         public static void PrintOptions(List<Can> SodaOptions)
         {
@@ -141,7 +142,8 @@ namespace SodaMachine
         //Uses a tuple to validate the soda selection.
         private static Tuple<bool,string> ValidateSodaSelection(int input, List<Can> uniqueCans)
         {
-            if(input >= 0 && input <= uniqueCans.Count)
+            // Should be greater than 0 since options start at 1, and tryParse can set input to 0
+            if(input > 0 && input <= uniqueCans.Count)
             {
                 return Tuple.Create(true, uniqueCans[input-1].Name);
             }
@@ -196,7 +198,7 @@ namespace SodaMachine
             Console.WriteLine($"Enjoy your {sodaName}.");
             if(changeAmount > 0)
             {
-                Console.WriteLine($"Despensing ${changeAmount}");
+                Console.WriteLine($"Dispensing ${changeAmount:F2}");
             }
             Console.ReadLine();
         }

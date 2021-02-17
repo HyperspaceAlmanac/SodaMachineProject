@@ -31,7 +31,6 @@ namespace SodaMachine
 
         private void PutCardIntoWallet()
         {
-            //DEBUG change back to $2.0 after debugging
             card = new Card(2.00);
         }
         private void FillWallet()
