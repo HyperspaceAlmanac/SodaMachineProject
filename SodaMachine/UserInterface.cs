@@ -125,7 +125,7 @@ namespace SodaMachine
                 Console.WriteLine("\nPlease choose from the following.");
                 for (int i = 0; i < uniqueCans.Count; i++)
                 {
-                    Console.WriteLine($"\n\tEnter -{i + 1}- for {uniqueCans[i].Name} : ${uniqueCans[i].Price}");
+                    Console.WriteLine($"\n\tEnter -{i + 1}- for {uniqueCans[i].Name} : ${uniqueCans[i].Price:F2}");
                 }
                 int.TryParse(Console.ReadLine(), out selection);
                 validatedSodaSelection = ValidateSodaSelection(selection, uniqueCans);
@@ -174,7 +174,7 @@ namespace SodaMachine
         public static void DisplayCost(Can selectedSoda)
         {
             Console.Clear();
-            Console.WriteLine($"\nYou have selected {selectedSoda.Name}.  This option will cost {selectedSoda.Price} \n");
+            Console.WriteLine($"\nYou have selected {selectedSoda.Name}.  This option will cost ${selectedSoda.Price:F2} \n");
         }
         //Displays the total value of a list of coins.
         public static void DiplayTotalValueOfCoins(List<Coin> coinsToTotal)
@@ -184,7 +184,7 @@ namespace SodaMachine
             {
                 totalValue += coin.Value;
             }
-            Console.WriteLine($"You currently have ${totalValue} in hand");
+            Console.WriteLine($"You currently have ${totalValue:F2} in hand");
         }
         //Used for any error messages.  Has a built in read line for readablity and console clear after.
         public static void EndMessage(string sodaName, double changeAmount)
@@ -235,7 +235,6 @@ namespace SodaMachine
             {
                 OutputText($"{(inventory[key] == 1 ? "A" : inventory[key].ToString())} can{(inventory[key] > 1 ? "s" : "")} of {key}");
             }
-            OutputText("");
         }
 
         // Hmmm, can't quite think of clean way to do this with compiled language
@@ -256,12 +255,24 @@ namespace SodaMachine
             }
             foreach (string key in inventory.Keys)
             {
-                // Printout of coins is going to be basic. Don't want to deal with penny vs pennies
-                OutputText($"{inventory[key]} {key}");
+                // Print out of coins is really bugging me. Going to really clean this up
+                string fullString = $"{(inventory[key] == 1 ? "A" : inventory[key].ToString())} ";
+                int count = inventory[key];
+                if (key == "Penny")
+                {
+                    fullString +=  count == 1 ? key : "Pennies";
+                }
+                else
+                {
+                    fullString += key + (count == 1 ? "" : "s");
+                }
+                OutputText(fullString);
             }
-            OutputText("");
         }
-
+        public static void SeparatorLine()
+        {
+            OutputText("=======================");
+        }
         public static void WaitToContinue(string message)
         {
             OutputText(message);

@@ -85,8 +85,10 @@ namespace SodaMachine
             {
                 Wallet.Coins.Add(c);
             }
+            UserInterface.SeparatorLine();
             UserInterface.OutputText($"You now have ${TotalCoinValue(Wallet.Coins):F2} in coins");
             UserInterface.DisplayObjects(Wallet.Coins);
+            UserInterface.SeparatorLine();
         }
 
         // Copied this over from SodaMachine. Maybe could make this public static

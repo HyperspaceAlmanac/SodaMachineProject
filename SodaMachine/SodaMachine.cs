@@ -28,7 +28,7 @@ namespace SodaMachine
 
             bankAccount = 0.0;
             // Set error margin
-            doubleErrorMargin = 0.01;
+            doubleErrorMargin = 0.001;
         }
 
         //Member Methods (Can Do)
@@ -62,7 +62,8 @@ namespace SodaMachine
         public void FillInventory()
         {
             // Just do 10 of each
-            for (int i = 0; i < 2; i++)
+            //DEBUG SET TO 2, change back to 10 later
+            for (int i = 0; i < 5; i++)
             {
                 _inventory.Add(new RootBeer());
                 _inventory.Add(new Cola());
@@ -156,7 +157,16 @@ namespace SodaMachine
         {
             double totalAmount = TotalCoinValue(payment);
             // Need to give back extra
-            if (totalAmount > chosenSoda.Price)
+            // Because of Double inaccuraies, it would be easiest to check for equals first
+
+            // if Equal
+            if (Math.Abs(totalAmount - chosenSoda.Price) < doubleErrorMargin)
+            {
+                UserInterface.EndMessage(chosenSoda.Name, 0);
+                customer.AddCanToBackpack(chosenSoda);
+                DepositCoinsIntoRegister(payment);
+            } // If the value + error margin that could make it go slightly below is greater than Soda price
+            else if (totalAmount + doubleErrorMargin > chosenSoda.Price)
             {
                 // Check to see if machine has enough change
                 double change = DetermineChange(TotalCoinValue(payment), chosenSoda.Price);
@@ -176,20 +186,12 @@ namespace SodaMachine
                     customer.AddCoinsIntoWallet(changeInCoins);
                 }
             }
-            // Not enough
-            else if (totalAmount < chosenSoda.Price)
+            else // Has to be less than
             {
                 // Give back the money, and put soda back into inventory
                 UserInterface.OutputText("Not enough for soda, returning money");
                 customer.AddCoinsIntoWallet(payment);
                 _inventory.Add(chosenSoda);
-            }
-            // Exact amount
-            else
-            {
-                UserInterface.EndMessage(chosenSoda.Name, 0);
-                customer.AddCanToBackpack(chosenSoda);
-                DepositCoinsIntoRegister(payment);
             }
             DisplayStatus();
         }
@@ -291,11 +293,13 @@ namespace SodaMachine
         }
         private void DisplayStatus()
         {
-            UserInterface.OutputText($"The Soda Machine has made a total of {bankAccount:F2} from credit card sales");
+            UserInterface.SeparatorLine();
+            UserInterface.OutputText($"The Soda Machine has made a total of ${bankAccount:F2} from credit card sales");
             UserInterface.OutputText("The Soda Machine has these in stock:");
             UserInterface.DisplayObjects(_inventory);
-            UserInterface.OutputText($"The Soda Machine now has {TotalCoinValue(_register):F2} in change");
+            UserInterface.OutputText($"The Soda Machine has ${TotalCoinValue(_register):F2} in change");
             UserInterface.DisplayObjects(_register);
+            UserInterface.SeparatorLine();
         }
         private bool ProductsLeft()
         {
