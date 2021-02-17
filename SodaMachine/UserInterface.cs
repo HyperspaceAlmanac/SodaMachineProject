@@ -36,13 +36,14 @@ namespace SodaMachine
         }
         //Method for getting user input for the selected coin.
         //Uses a tuple to help group valadation boolean and normalized selection name.
-        public static string CoinSelection(Can selectedCan, List<Coin> paymnet)
+        public static string CoinSelection(Can selectedCan, List<Coin> payment)
         {
             Tuple<bool, string> validatedSelection;
             do
             {
                 DisplayCost(selectedCan);
-                DiplayTotalValueOfCoins(paymnet);
+                DiplayTotalValueOfCoins(payment);
+                DisplayObjects(payment);
                 Console.WriteLine("\n");
                 Console.WriteLine("Enter -1- for Quarter");
                 Console.WriteLine("Enter -2- for Dime");
@@ -216,7 +217,7 @@ namespace SodaMachine
             return result;
         }
 
-        public static void DisplayCans(List<Can> sodas)
+        public static void DisplayObjects(List<Can> sodas)
         {
             Dictionary<string, int> inventory = new Dictionary<string, int>();
             foreach (Can can in sodas)
@@ -232,9 +233,39 @@ namespace SodaMachine
             }
             foreach (string key in inventory.Keys)
             {
-                OutputText($"{inventory[key]} can{(inventory[key] > 1 ? "s" : "")} of {key}");
+                OutputText($"{(inventory[key] == 1 ? "A" : inventory[key].ToString())} can{(inventory[key] > 1 ? "s" : "")} of {key}");
             }
             OutputText("");
+        }
+
+        // Hmmm, can't quite think of clean way to do this with compiled language
+        // Except if Coin and Can both implement some interface
+        public static void DisplayObjects(List<Coin> coins)
+        {
+            Dictionary<string, int> inventory = new Dictionary<string, int>();
+            foreach (Coin coin in coins)
+            {
+                if (inventory.ContainsKey(coin.Name))
+                {
+                    inventory[coin.Name] += 1;
+                }
+                else
+                {
+                    inventory[coin.Name] = 1;
+                }
+            }
+            foreach (string key in inventory.Keys)
+            {
+                // Printout of coins is going to be basic. Don't want to deal with penny vs pennies
+                OutputText($"{inventory[key]} {key}");
+            }
+            OutputText("");
+        }
+
+        public static void WaitToContinue(string message)
+        {
+            OutputText(message);
+            Console.ReadKey();
         }
     }
 }

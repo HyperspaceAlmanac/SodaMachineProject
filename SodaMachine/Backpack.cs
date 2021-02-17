@@ -19,8 +19,8 @@ namespace SodaMachine
         //Member Methods (Can Do)
         public void DisplayContent()
         {
-            UserInterface.OutputText("The backpack has:");
-            UserInterface.DisplayCans(cans);
+            UserInterface.OutputText("Content of backpack:");
+            UserInterface.DisplayObjects(cans);
         }
     }
 }

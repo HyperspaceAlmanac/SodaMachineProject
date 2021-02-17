@@ -41,7 +41,7 @@ namespace SodaMachine
                     }
                     else
                     {
-                        UserInterface.OutputText("There are no more " + coinName + "s left in wallet");
+                        UserInterface.WaitToContinue("There are no more " + coinName + "s left in the wallet!");
                     }
                 }
             }
@@ -85,7 +85,8 @@ namespace SodaMachine
             {
                 Wallet.Coins.Add(c);
             }
-            UserInterface.OutputText($"Wallet now has ${TotalCoinValue(Wallet.Coins):F2} in coins");
+            UserInterface.OutputText($"You now have ${TotalCoinValue(Wallet.Coins):F2} in coins");
+            UserInterface.DisplayObjects(Wallet.Coins);
         }
 
         // Copied this over from SodaMachine. Maybe could make this public static

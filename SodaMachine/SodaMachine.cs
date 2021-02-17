@@ -18,15 +18,6 @@ namespace SodaMachine
         // Private error margin for double comparison
         private double doubleErrorMargin;
 
-        // Tuple array of coin name and value
-        public static readonly Tuple<string, double>[] COINOPTIONS = new Tuple<string, double>[] {
-            new Tuple<string, double> ("Quarter", 0.25),
-            new Tuple<string, double> ("Dime", 0.1),
-            new Tuple<string, double> ("Nickel", 0.05),
-            new Tuple<string, double> ("Penny", 0.01),
-        };
-
-
         //Constructor (Spawner)
         public SodaMachine()
         {
@@ -71,7 +62,7 @@ namespace SodaMachine
         public void FillInventory()
         {
             // Just do 10 of each
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 2; i++)
             {
                 _inventory.Add(new RootBeer());
                 _inventory.Add(new Cola());
@@ -83,6 +74,10 @@ namespace SodaMachine
         //Takes in a customer which can be passed freely to which ever method needs it.
         public void BeginTransaction(Customer customer)
         {
+            if (!ProductsLeft())
+            {
+                UserInterface.OutputText("The Soda Machine is empty.");
+            }
             bool willProceed = UserInterface.DisplayWelcomeInstructions(_inventory);
             if (willProceed)
             {
@@ -141,14 +136,13 @@ namespace SodaMachine
                 bankAccount += chosenSoda.Price;
                 UserInterface.EndMessage(chosenSoda.Name, 0);
                 customer.AddCanToBackpack(chosenSoda);
-                UserInterface.OutputText($"The Soda Machine has made a total of {bankAccount:F2} from credit card sales");
-                DisplayInventory();
             }
             else
             {
                 UserInterface.OutputText("Insufficient funds");
                 _inventory.Add(chosenSoda);
             }
+            DisplayStatus();
         }
 
         //This is the main method for calculating the result of the transaction.
@@ -179,7 +173,6 @@ namespace SodaMachine
                     UserInterface.EndMessage(chosenSoda.Name, TotalCoinValue(changeInCoins));
                     customer.AddCanToBackpack(chosenSoda);
                     DepositCoinsIntoRegister(payment);
-                    DisplayInventory();
                     customer.AddCoinsIntoWallet(changeInCoins);
                 }
             }
@@ -197,8 +190,8 @@ namespace SodaMachine
                 UserInterface.EndMessage(chosenSoda.Name, 0);
                 customer.AddCanToBackpack(chosenSoda);
                 DepositCoinsIntoRegister(payment);
-                DisplayInventory();
             }
+            DisplayStatus();
         }
         //Takes in the value of the amount of change needed.
         //Attempts to gather all the required coins from the sodamachine's register to make change.
@@ -295,14 +288,18 @@ namespace SodaMachine
             {
                 _register.Add(c);
             }
-            UserInterface.OutputText($"The Soda Machine now has {TotalCoinValue(_register):F2} in change");
         }
-
-        private void DisplayInventory()
+        private void DisplayStatus()
         {
-            UserInterface.OutputText("Soda Machine has:");
-            UserInterface.DisplayCans(_inventory);
+            UserInterface.OutputText($"The Soda Machine has made a total of {bankAccount:F2} from credit card sales");
+            UserInterface.OutputText("The Soda Machine has these in stock:");
+            UserInterface.DisplayObjects(_inventory);
+            UserInterface.OutputText($"The Soda Machine now has {TotalCoinValue(_register):F2} in change");
+            UserInterface.DisplayObjects(_register);
         }
-
+        private bool ProductsLeft()
+        {
+            return _inventory.Count > 0;
+        }
     }
 }
